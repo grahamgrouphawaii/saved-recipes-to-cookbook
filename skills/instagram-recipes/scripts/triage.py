@@ -86,6 +86,7 @@ def main():
             text.append({"n": rec["n"], "src": k, "score": sc})
         else:
             video.append({"n": rec["n"], "code": rec["code"],
+                          "url": rt.post_url(rec),
                           "user": rec.get("user", ""), "dur": rec.get("dur", 0),
                           "score": sc})
 

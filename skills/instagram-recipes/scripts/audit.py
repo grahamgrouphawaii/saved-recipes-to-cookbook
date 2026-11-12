@@ -26,6 +26,9 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import recipe_text as rt
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -59,11 +62,10 @@ def main():
         rec = data[n]
         p = os.path.join(rd, fn)
         t = open(p).read()
-        url = f"https://www.instagram.com/reel/{rec['code']}/"
+        url = rt.post_url(rec)
 
         want = f"- **Source:** [@{rec['user']}]({url})"
-        found = re.search(r"^- \*\*Source:\*\* \[@[^\]]+\]\("
-                          r"https://www\.instagram\.com/reel/[^)]+\)", t, re.M)
+        found = re.search(r"^- \*\*Source:\*\* \[@[^\]]+\]\(https?://[^)]+\)", t, re.M)
         if not found:
             problems.append(f"{fn}: no Source line")
         elif found.group(0) != want:

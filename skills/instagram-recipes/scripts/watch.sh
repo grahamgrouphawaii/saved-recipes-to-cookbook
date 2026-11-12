@@ -60,7 +60,7 @@ v=v[s:s+c] if c else v[s:]
 import os
 todo=[x for x in v if not os.path.exists('$WORK/txt/%s.txt'%x['code'])
                    and not os.path.isdir('$WORK/frames/%s'%x['code'])]
-print(' '.join('https://www.instagram.com/reel/%s/'%x['code'] for x in todo))
+print(' '.join(x.get('url') or 'https://www.instagram.com/reel/%s/'%x['code'] for x in todo))
 print(len(todo), file=sys.stderr)
 ")
 N=$(printf '%s' "$mapfile_urls" | wc -w | tr -d ' ')

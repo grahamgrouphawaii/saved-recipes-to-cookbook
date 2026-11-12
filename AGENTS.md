@@ -16,10 +16,16 @@ The point of the design is that most of the work is not model work. Do not read
 captions yourself and write recipes out by hand. Run the scripts.
 
 ```bash
-# 1. the user exports their collection themselves, in their own browser.
-#    give them skills/instagram-recipes/scripts/export-collection.js and
-#    the instructions at the top of it.
-#    they end up with recipes.json.
+# 1a. TikTok: one command. the user gets the URL from their profile, saved tab,
+#     Collections, then the one they want. --append merges with an Instagram
+#     export so both end up in one book.
+python3 -I skills/instagram-recipes/scripts/export-tiktok.py \
+  "https://www.tiktok.com/@them/collection/Recipes-7312345678901234567"
+
+# 1b. Instagram: the user exports it themselves, in their own browser.
+#     give them skills/instagram-recipes/scripts/export-collection.js and
+#     the instructions at the top of it.
+#     they end up with recipes.json.
 
 # 2-3. triage, then build everything that is already written down. no model.
 ./run.sh recipes.json --out book --title "Recipe Book"
@@ -38,6 +44,12 @@ keys are documented at the top of `skills/instagram-recipes/scripts/write_recipe
 Two practical notes. The download step needs network access, so if your sandbox
 blocks it, that step has to run with network enabled. And `run.sh` and
 `watch.sh` are the cheap parts, so never substitute your own reading for them.
+
+On TikTok, expect almost everything to land in the video tier. Creators there
+put the dish name and hashtags in the caption and the recipe in the video, so
+the free half is small and the cost per recipe is higher than on Instagram. Tell
+the user that after triage, not after the bill. TikTok comment text is also
+unavailable, so a recipe left in the comments is missed.
 
 ## If you cannot look at images
 

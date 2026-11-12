@@ -76,8 +76,35 @@ VERB = re.compile(
     r"|once\b|when\b|while\b|then\b|next\b|finally\b|start|begin)\b", re.I)
 
 
+REFLOW_H = re.compile(
+    r"\s*\b((?:full\s+)?ingredients?|method|instructions?|directions?|steps?"
+    r"|you\'?ll need|what you need|macros?|notes?|tips?)\s*:", re.I)
+
+
+def reflow(txt):
+    """
+    Put line breaks back into a caption that arrived as one long line.
+
+    Instagram keeps the creator's line breaks. TikTok often does not, and a
+    recipe as one unbroken paragraph defeats every rule downstream, because all
+    of them work on the shape of a line. So when a caption has almost no breaks
+    in it, split at the markers that are unambiguous: a section header followed
+    by a colon, a numbered step, a bullet. Anything less certain than that is
+    left alone, since a wrong break reads as a wrong ingredient.
+    """
+    if txt.count("\n") >= 3 or len(txt) < 120:
+        return txt
+    s = REFLOW_H.sub(lambda m: "\n" + m.group(1) + ":\n", txt)
+    s = re.sub(r"\s+(?=\d{1,2}[\.\)]\s+[A-Za-z])", "\n", s)
+    # a bullet glyph, or a hyphen that is followed by a word rather than a number
+    s = re.sub(r"\s+(?=[•▢✅·‣▸]\s*\w)", "\n", s)
+    s = re.sub(r"\s+(?=-\s+[A-Za-z])", "\n", s)
+    return re.sub(r"\n{3,}", "\n\n", s).strip()
+
+
 def clean(cap):
     """Strip hashtag walls, promo lines and emoji dividers from a caption."""
+    cap = reflow(cap)
     out = []
     for ln in cap.split("\n"):
         s = ln.strip()
@@ -232,6 +259,31 @@ def drop_title_line(block, title):
     return "\n".join(lines).lstrip("\n")
 
 
+UNIT = (r"g|kg|oz|ml|l|lb|lbs|cup|cups|tbsp|tbs|tsp|teaspoons?|tablespoons?"
+        r"|cloves?|slices?|cans?|sticks?|pcs?|pieces?|scoops?")
+# a quantity that starts a new item, i.e. one that follows a word rather than
+# another number, so "2 1/2 cups flour" is left whole
+RUN_ON = re.compile(r"(?<=[a-z\)’])\s+(?=\d+(?:[\./]\d+)?\s*(?:" + UNIT + r")\b)", re.I)
+
+
+def split_run_on(block):
+    """
+    Break an ingredient line that is really several ingredients run together.
+
+    Only applied to the ingredients block, and only to a line carrying three or
+    more quantities, because that is the shape of a list that lost its newlines
+    rather than of a sentence. A step like "simmer for 3 minutes" never matches,
+    since minutes is not a unit of measure.
+    """
+    out = []
+    for ln in block.split("\n"):
+        if len(ln) > 60 and len(re.findall(MEAS_RE, ln)) >= 3:
+            out.extend(x.strip() for x in RUN_ON.split(ln) if x and x.strip())
+        else:
+            out.append(ln)
+    return "\n".join(out)
+
+
 def bulletize(block):
     """
     Render an ingredient block as a markdown list. A short line with no
@@ -268,6 +320,15 @@ def numberize(block):
         out.append(f"{n}. {s}")
         n += 1
     return "\n".join(out)
+
+
+def post_url(rec):
+    """
+    Where this post lives. Exporters write a `url` field; the Instagram
+    exporter did not always, so fall back to building a reel link from the
+    shortcode for the sake of collections exported before that was added.
+    """
+    return rec.get("url") or f"https://www.instagram.com/reel/{rec['code']}/"
 
 
 def slug(t):
@@ -309,7 +370,7 @@ def render(rec, meta, cats):
     reader always knows whether they are looking at the creator's own words or
     at something transcribed from audio.
     """
-    url = f"https://www.instagram.com/reel/{rec['code']}/"
+    url = post_url(rec)
     cat = cats["names"][meta["cat"]]
     L = [f"# {meta['title']}", ""]
     L.append(f"- **Category:** {cat}")
@@ -344,7 +405,8 @@ def render(rec, meta, cats):
             _intro, ing, steps, notes = parts
             # the title line can hide a paragraph of preamble behind it, so
             # trim again once the title itself is out of the way
-            ing = trim_ingredient_head(drop_title_line(ing, meta["title"]))
+            ing = split_run_on(
+                trim_ingredient_head(drop_title_line(ing, meta["title"])))
             L += ["## Ingredients", "", bulletize(ing), "",
                   "## Steps", "", numberize(steps), ""]
             if notes.strip():

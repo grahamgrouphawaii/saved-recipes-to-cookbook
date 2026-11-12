@@ -35,6 +35,32 @@ set a usage ceiling, check `mcp__ccd_session_mgmt__get_usage` between batches.
 
 ## 1. Export the collection
 
+Ask which platform. The two are different only at this step; everything after
+it reads `recipes.json` and does not care where the posts came from.
+
+### TikTok
+
+One command, no console script. The user needs the URL of a TikTok Collection,
+which they get from their profile, the saved tab, Collections, then the one they
+want. It ends in a long number.
+
+```bash
+python3 -I <skill>/scripts/export-tiktok.py "https://www.tiktok.com/@them/collection/Recipes-7312345678901234567"
+```
+
+Add `--append` to put TikTok and Instagram saves into one book. Two things to
+tell the user up front. TikTok's loose Favorites list cannot be read, so
+ungrouped bookmarks have to be moved into a Collection on TikTok first. And
+yt-dlp returns TikTok comment counts but not comment text, so a recipe left in
+the comments is not picked up the way it is on Instagram.
+
+Expect TikTok to be heavily video tier. Creators there put the dish name and a
+wall of hashtags in the caption and the actual recipe in the video, so the free
+half will be small and the job will cost more per recipe than Instagram does.
+Say so after triage rather than letting the user discover it.
+
+### Instagram
+
 The export runs in the user's own browser on their own session. Do not try to
 drive this with a browser tool, and do not export their cookies to a file. Give
 them `scripts/export-collection.js` and the instructions at the top of it: open

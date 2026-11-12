@@ -1,15 +1,15 @@
-# Instagram saved recipes to a real cookbook
+# Saved recipes to a real cookbook
 
 I had 520 recipes saved on Instagram and no way to cook from any of them. You
 know the problem. You save a reel, it goes into a folder, and six months later
 you are scrolling a wall of thumbnails trying to remember which one was the
 chicken thing.
 
-This is a Claude Code skill that turns one of your saved collections into a
-folder of markdown recipes, sorted into categories, each one linking back to the
-reel it came from.
+This is a Claude Code skill that turns a saved collection into a folder of
+markdown recipes, sorted into categories, each one linking back to the post it
+came from. Instagram saved collections and TikTok collections both work.
 
-It does the whole collection, including the reels where nobody wrote anything
+It does the whole collection, including the posts where nobody wrote anything
 down. Those get watched and transcribed.
 
 ## What you end up with
@@ -111,19 +111,48 @@ says what to do when it can't: those get a titled entry, a watch link and a note
 saying the recipe hasn't been read, instead of a guess. Test on five before
 pointing anything at three hundred.
 
-## How your Instagram login is handled
+## TikTok
+
+TikTok is one command, with no console script at all:
+
+```bash
+python3 -I skills/instagram-recipes/scripts/export-tiktok.py \
+  "https://www.tiktok.com/@you/collection/Recipes-7312345678901234567"
+```
+
+Get that URL from your profile, the saved tab, Collections, then the collection
+you want. Add `--append` and it merges into an existing `recipes.json`, so your
+Instagram and TikTok saves can end up in one book.
+
+Two honest caveats. TikTok's loose Favorites list, the ungrouped bookmarks,
+can't be read this way, so move those into a Collection on TikTok first. And
+TikTok doesn't hand over comment text, only comment counts, so a recipe a
+creator left in their first comment gets picked up on Instagram and missed on
+TikTok.
+
+Expect TikTok to lean much harder on the video half. Instagram creators write
+the recipe in the caption because their audience expects it. TikTok creators
+mostly write the dish name and nine hashtags and say the recipe out loud. I
+tested one public cooking account and all eight posts went to the video tier:
+the caption was "Lobster Bisque" plus hashtags, and the transcript had the
+quantities, the butter, the pan temperature, all of it. So TikTok works, it just
+costs more per recipe than Instagram.
+
+## How your login is handled
 
 Your password never goes anywhere near this, and neither do your cookies.
 
-Reading the collection happens in your browser, not in the tool. You open your
+On Instagram, reading the collection happens in your browser, not in the tool. You open your
 saved collection, open the developer console, and paste in one script. It uses
 the session you are already signed in with, calls only instagram.com, and hands
 you a `recipes.json` file through your browser's normal download prompt. You can
 read the whole script first. It's about a hundred lines and it is commented.
 
-Downloading the videos uses `yt-dlp --cookies-from-browser`, which reads your
-session straight out of the running browser and keeps it in memory. No cookie
-file gets written, so there is nothing sitting on disk to leak.
+On TikTok there is no script to paste. Reading your own collection and
+downloading the videos both use `yt-dlp --cookies-from-browser`, which reads
+your session straight out of the running browser and keeps it in memory. No
+cookie file gets written, so there is nothing sitting on disk to leak. Public
+collections need no sign-in at all.
 
 It only reads your own saves. There is nothing in here that touches anyone
 else's account, and nothing that posts, likes, follows or sends.
@@ -143,22 +172,24 @@ amount is a guess, the file says it's a guess.
 Deleted posts. Six of mine had been taken down or made private since I saved
 them. Those get a file saying that, rather than an invented recipe.
 
-Comments. A recipe in the first comment gets picked up. One buried in a reply to
-a comment does not.
+Comments. On Instagram a recipe in the first comment gets picked up, though one
+buried in a reply to a comment does not. On TikTok no comment text is available
+at all.
 
 Categories. The default six are food ones: sweets, light and high protein, mains,
 dips and sides, baking, drinks. Edit `scripts/categories.json` to re-cut it, or
 rewrite them entirely if your collection isn't food.
 
-## It's Instagram's data, not mine and not yours
+## It's their data, not mine and not yours
 
 The recipes belong to the people who posted them. This builds you a private,
 searchable copy of things you already saved, with a link back to every creator
 so you can go and watch, follow or credit them. Don't republish someone's recipe
-as your own, and don't point this at an account that isn't yours.
+as your own, and don't point this at saves that aren't yours.
 
-Instagram's private endpoints change without warning. If the export stops
-working, that's why.
+Instagram's private endpoints change without warning, and TikTok's are read
+through yt-dlp, which has to keep up with them. If an export stops working,
+that's why. Updating yt-dlp is the first thing to try.
 
 ## Licence
 

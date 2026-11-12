@@ -95,3 +95,43 @@ Six posts had been deleted or made private between saving and reading. Two were
 not recipes at all: a workout plan and a comedy clip, saved into the folder by
 mistake. All eight got entries saying what they were. If the index count and
 the collection count agree, the reader can trust the book.
+
+## TikTok is a different shape of problem, not a harder one
+
+Three things found while adding it.
+
+yt-dlp understands TikTok collection URLs directly and returns the caption, the
+duration and the post date in one metadata call, so TikTok needs no browser
+console script. In that respect it is easier than Instagram, where the
+equivalent extractor is marked broken and the collection has to be read through
+the site's own private endpoint.
+
+TikTok captions arrive as one unbroken line. Every rule in the splitter works on
+the shape of a line, so a caption with no breaks in it cannot be split at all,
+and a perfectly good recipe comes out as one paragraph. `reflow()` puts breaks
+back at the markers that are unambiguous: a section header with a colon, a
+numbered step, a bullet. It only fires on captions with almost no breaks
+already, so it is a no-op on all 520 Instagram captions, which was the test that
+mattered. `split_run_on()` then breaks an ingredient line carrying three or more
+quantities, which is what a list looks like after it has lost its newlines.
+Neither touches a step like "simmer for 3 minutes", because minutes is not a
+unit of measure.
+
+TikTok gives no comment text. yt-dlp returns comment counts only, so the
+recipe-in-the-first-comment case that works on Instagram is simply missing. Say
+so rather than letting someone wonder why a recipe came out empty.
+
+And the thing worth setting expectations on: TikTok is far more video heavy.
+Instagram creators write the recipe in the caption because their audience
+expects it. TikTok creators write the dish name and nine hashtags and say the
+recipe out loud. On a public cooking account, all eight posts tested went to the
+video tier, and the one transcribed came back with every quantity in it. So the
+free half of this job is small on TikTok and the cost per recipe is higher.
+
+## The post URL has to live in the data
+
+Links were built as `instagram.com/reel/<code>` in four places. The moment a
+second platform exists that is wrong everywhere at once, and it is the kind of
+wrong that produces a plausible dead link rather than an error. Exporters now
+write a `url` field per post and everything downstream reads it, falling back to
+the Instagram template only for collections exported before the field existed.

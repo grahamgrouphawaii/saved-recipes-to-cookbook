@@ -86,6 +86,7 @@
     user: m.user?.username || '',
     dur: Math.round(m.video_duration || 0),
     taken: m.taken_at || 0,
+    url: m.code ? `https://www.instagram.com/reel/${m.code}/` : '',
     cap: m.caption?.text || '',
     own: [],
     top: [],
