@@ -50,12 +50,14 @@ python3 -m venv work/venv
 work/venv/bin/pip install -q yt-dlp
 ```
 
-`watch.sh` checks `work/venv/bin/yt-dlp` if there is no yt-dlp on the PATH.
+`watch.sh` and both exporters use `work/venv/bin/yt-dlp` whenever it exists,
+in preference to whatever is on the PATH. That is on purpose: if the broken
+Homebrew copy won, making the venv would change nothing.
 
 ## Browsers
 
 `watch.sh --browser` takes chrome, safari, firefox, brave, edge, chromium or
-vivaldi, whichever you are signed in to Instagram with. Chrome is the default.
+vivaldi, whichever you are signed in to the site with. Chrome is the default.
 On macOS, Safari needs full disk access for the terminal, so Chrome is the
 easier choice.
 

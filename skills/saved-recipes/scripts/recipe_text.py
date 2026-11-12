@@ -1,5 +1,5 @@
 """
-Shared text handling for the Instagram recipe pipeline.
+Shared text handling for the saved-recipe pipeline.
 
 Captions are written for a feed, not for a cookbook. They carry calls to
 action, hashtag walls, emoji dividers and promo lines, and the ingredients and
@@ -102,9 +102,47 @@ def reflow(txt):
     return re.sub(r"\n{3,}", "\n\n", s).strip()
 
 
+# Creators dodge spam filters by swapping single letters for lookalikes from
+# another alphabet, so a caption reads "Recipe in Firsτ Coʍmеոτ". It is common on
+# Facebook and it happens on Instagram too. Left alone, a line like that slips
+# past every pattern below and can end up as a recipe title.
+#
+# Only mixed-script words are folded. A word with no ASCII letter in it is
+# left exactly as it is, so a caption genuinely written in Greek, Russian or
+# Armenian is never touched.
+LOOKALIKE = {
+    "\u0430": "a", "\u0435": "e", "\u043e": "o", "\u0441": "c", "\u0440": "p",
+    "\u0445": "x", "\u0456": "i", "\u0455": "s", "\u0443": "y", "\u043c": "m",
+    "\u043a": "k", "\u0432": "b", "\u0433": "r", "\u0442": "t", "\u043d": "h",
+    "\u0501": "d", "\u0475": "v", "\u0458": "j", "\u051b": "q", "\u0501": "d",
+    "\u03bf": "o", "\u03bd": "v", "\u03c4": "t", "\u03c1": "p", "\u03b1": "a",
+    "\u03b5": "e", "\u03b9": "i", "\u03ba": "k", "\u03f2": "c", "\u03c5": "u",
+    # IPA letters only here. A real alphabet letter such as Turkish \u0131 is left
+    # out on purpose: Kazand\u0131b\u0131 is spelled that way and should stay that way.
+    "\u028d": "m", "\u0251": "a", "\u0261": "g", "\u026a": "i",
+    "\u057d": "u", "\u0578": "n", "\u0561": "w", "\u0574": "d",
+    "\u0399": "I", "\u0391": "A", "\u0395": "E", "\u039f": "O", "\u03a1": "P",
+    "\u03a4": "T", "\u03a7": "X", "\u039d": "N", "\u039c": "M", "\u039a": "K",
+    "\u0392": "B", "\u041d": "H", "\u0410": "A", "\u0415": "E", "\u041e": "O",
+    "\u0421": "C", "\u0422": "T", "\u0412": "B", "\u041c": "M", "\u041a": "K",
+}
+HAS_ASCII = re.compile(r"[A-Za-z]")
+
+
+def fold_lookalikes(txt):
+    """Put the swapped-out letters back, word by word, Latin words only."""
+    if txt.isascii():
+        return txt
+    parts = re.split(r"(\s+)", txt)
+    for i, w in enumerate(parts):
+        if w and not w.isascii() and HAS_ASCII.search(w):
+            parts[i] = "".join(LOOKALIKE.get(c, c) for c in w)
+    return "".join(parts)
+
+
 def clean(cap):
     """Strip hashtag walls, promo lines and emoji dividers from a caption."""
-    cap = reflow(cap)
+    cap = reflow(fold_lookalikes(cap))
     out = []
     for ln in cap.split("\n"):
         s = ln.strip()

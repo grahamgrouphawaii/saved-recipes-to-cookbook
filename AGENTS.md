@@ -27,6 +27,12 @@ python3 -I skills/saved-recipes/scripts/export-tiktok.py \
 #     the instructions at the top of it.
 #     they end up with recipes.json.
 
+# 1c. Facebook: no endpoint lists saved items, so the links come either from
+#     scripts/export-facebook.js run on facebook.com/saved, or from a
+#     Download Your Information export. then:
+python3 -I skills/saved-recipes/scripts/export-facebook.py \
+  --urls facebook-saved-urls.txt            # or --dyi ~/Downloads/facebook-you
+
 # 2-3. triage, then build everything that is already written down. no model.
 ./run.sh recipes.json --out book --title "Recipe Book"
 
@@ -51,6 +57,14 @@ the free half is small and the cost per recipe is higher than on Instagram. Tell
 the user that after triage, not after the bill. TikTok comment text is also
 unavailable, so a recipe left in the comments is missed.
 
+On Facebook, say the awkward part up front. Comment text cannot be read at all,
+and the large recipe pages put the recipe in the first comment on purpose,
+behind a seven second reel with no narration and nothing on screen. Those posts
+have no recipe to find, anywhere. `export-facebook.py` counts the ones whose
+caption says the recipe is in the comments and prints that number before any
+video is downloaded, so pass it on then rather than after. Facebook posts whose
+creator wrote the recipe into the caption behave exactly like Instagram.
+
 ## If you cannot look at images
 
 `watch.sh` writes a transcript and a few video frames per reel. Most reels are
@@ -72,9 +86,10 @@ That is an honest partial result. A made up recipe is not.
 
 ## Hard rules, whoever is running this
 
-Never write an Instagram shortcode you did not read out of `recipes.json`. A
-fabricated code is eleven characters that look exactly like the real eleven and
-the link is dead, and it is the one error here a reader cannot catch. Run
+Never write a post id you did not read out of `recipes.json`. A fabricated
+Instagram shortcode is eleven characters that look exactly like the real eleven,
+and a made up TikTok or Facebook number looks just as real. The link is dead
+either way, and it is the one error here a reader cannot catch. Run
 `audit.py --fix` after every batch and it cannot survive.
 
 Say where every recipe came from. The `src` field puts a line at the top of each
@@ -108,8 +123,13 @@ sends text to a model, first check whether a rule would do it.
 Adding a platform means writing one new exporter. Everything downstream reads
 `recipes.json` and `work/txt/<id>.txt` and does not care where either came
 from. The shape of a `recipes.json` record is in
-`skills/saved-recipes/scripts/export-collection.js`.
+`skills/saved-recipes/scripts/export-collection.js`. Two fields are load
+bearing: `code` has to match what yt-dlp will name the mp4, because `watch.sh`
+pairs transcripts to posts by that name, and `url` has to be the post's own
+link, because every link in the finished book is built from it.
 
 There are no tests yet. Verify a change by running the pipeline over a real
 export and reading twenty output files, including some from
-`data/needs_review.json`.
+`data/needs_review.json`. If you touch anything shared, re-export a collection
+you have run before and check that the same posts come out of `autobuild.py`:
+the set of post numbers it builds should not move.

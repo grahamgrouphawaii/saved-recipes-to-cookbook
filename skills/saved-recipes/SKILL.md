@@ -1,9 +1,9 @@
 ---
 name: saved-recipes
-description: Turn a saved Instagram or TikTok collection into a real recipe book. Pulls every post in one of the user's own saved collections, takes the recipe from the caption, from the creator's own comment, or by watching the video and transcribing it, then writes one markdown file per recipe, sorted into categories, each one linking back to the post. Use when someone wants to get recipes out of their Instagram saves or TikTok collections, build a cookbook from saved reels, or asks what is in their saved recipes folder. Also covers saved collections that are not food, since only the category list is food specific.
+description: Turn saved Instagram, TikTok or Facebook posts into a real recipe book. Pulls every post in one of the user's own saved collections, takes the recipe from the caption, from the creator's own comment, or by watching the video and transcribing it, then writes one markdown file per recipe, sorted into categories, each one linking back to the post. Use when someone wants to get recipes out of their Instagram saves, TikTok collections or Facebook saved posts, build a cookbook from saved reels, or asks what is in their saved recipes folder. Also covers saved collections that are not food, since only the category list is food specific.
 ---
 
-# Instagram saved collection to recipe book
+# Saved posts to a recipe book
 
 Most of a saved recipe collection is already written down. The caption has the
 ingredients, or the creator put them in the first comment. The rest only exist
@@ -35,8 +35,8 @@ set a usage ceiling, check `mcp__ccd_session_mgmt__get_usage` between batches.
 
 ## 1. Export the collection
 
-Ask which platform. The two are different only at this step; everything after
-it reads `recipes.json` and does not care where the posts came from.
+Ask which platform. They differ only at this step; everything after it reads
+`recipes.json` and does not care where the posts came from.
 
 ### TikTok
 
@@ -77,6 +77,35 @@ run the same fetches through `javascript_tool`. Two things bite if you do:
 `Runtime.evaluate` gives up after about 45 seconds, so page in chunks and keep
 state on `window`; and tool output truncates every string field at 1000
 characters, so long captions have to come back split across several fields.
+
+### Facebook
+
+Worth saying before they start: Facebook gives up less than the other two, and
+it is not a limit this tool can code its way around.
+
+There is no endpoint that lists saved items, so the links have to come from
+somewhere else. Either run `scripts/export-facebook.js` in their console on
+facebook.com/saved, or have them ask Facebook for their data (Settings -> Your
+information -> Download your information, JSON, "Saved items and collections")
+and point the script at the export. Either way it ends in the same place:
+
+```bash
+python3 -I <skill>/scripts/export-facebook.py --urls facebook-saved-urls.txt
+python3 -I <skill>/scripts/export-facebook.py --dyi ~/Downloads/facebook-yourname
+```
+
+That fetches each post's caption, author, length and date, about a second each.
+`--append` merges with an Instagram or TikTok export.
+
+The real limit is comments. yt-dlp returns no comment text for Facebook and the
+comments are not in the page source, so there is no way to read them. That
+matters here more than anywhere else, because the big Facebook recipe pages put
+the recipe in the first comment deliberately and leave the caption as bait, over
+a reel that runs six to nine seconds. Nothing is in the audio and nothing is on
+screen. Those posts cannot be turned into recipes by anyone, and the exporter
+counts them and says so before a single video is downloaded. Pass that number
+on. Creators who write the recipe into the caption, or who narrate it, come
+through exactly like Instagram.
 
 ## 2. Triage
 
@@ -160,10 +189,11 @@ ended that way. A partial result that says so is fine. An invented recipe is not
 
 ## Hard rules
 
-Never write a reel code you did not read out of `recipes.json`. A fabricated
-shortcode is eleven characters that look exactly like the real eleven, and the
-link is dead. This is the one mistake in this job that a reader cannot spot. Run
-`audit.py --fix` after every batch and it cannot survive.
+Never write a post id you did not read out of `recipes.json`. A fabricated
+Instagram shortcode is eleven characters that look exactly like the real eleven,
+and a made up TikTok or Facebook number looks just as real. The link is dead
+either way, and this is the one mistake in this job that a reader cannot spot.
+Run `audit.py --fix` after every batch and it cannot survive.
 
 Say where every recipe came from. The `src` field puts a line at the top of each
 file: the caption, the creator's own comment, the comments, or watching the

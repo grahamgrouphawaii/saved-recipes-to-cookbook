@@ -42,9 +42,14 @@ import sys
 
 
 def find_ytdlp(work="work"):
-    return (shutil.which("yt-dlp")
-            or next((p for p in (os.path.join(work, "venv/bin/yt-dlp"),
-                                 "venv/bin/yt-dlp") if os.path.isfile(p)), None))
+    # The venv wins over PATH on purpose. On macOS, Homebrew's yt-dlp is often
+    # broken ("No module named expat"), and reference/setup.md tells people to
+    # make a venv to get round it. Looking at PATH first would hand them the
+    # broken one anyway and the venv would never get used.
+    for p in (os.path.join(work, "venv/bin/yt-dlp"), "venv/bin/yt-dlp"):
+        if os.path.isfile(p):
+            return p
+    return shutil.which("yt-dlp")
 
 
 def fetch(url, ytdlp, browser, use_cookies, limit):

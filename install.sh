@@ -10,6 +10,7 @@ if [ -e "$dest/saved-recipes" ]; then
 fi
 cp -R "$here/skills/saved-recipes" "$dest/"
 cp "$here/run.sh" "$dest/saved-recipes/run.sh"
+rm -rf "$dest/saved-recipes/scripts/__pycache__"
 chmod +x "$dest/saved-recipes/scripts/watch.sh" "$dest/saved-recipes/run.sh"
 echo "installed to $dest/saved-recipes"
 echo

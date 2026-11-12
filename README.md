@@ -7,7 +7,9 @@ chicken thing.
 
 This is a Claude Code skill that turns a saved collection into a folder of
 markdown recipes, sorted into categories, each one linking back to the post it
-came from. Instagram saved collections and TikTok collections both work.
+came from. Instagram saved collections, TikTok collections and Facebook saved
+posts all work, though Facebook gives up less than the other two and the section
+below says why.
 
 It does the whole collection, including the posts where nobody wrote anything
 down. Those get watched and transcribed.
@@ -138,6 +140,51 @@ the caption was "Lobster Bisque" plus hashtags, and the transcript had the
 quantities, the butter, the pan temperature, all of it. So TikTok works, it just
 costs more per recipe than Instagram.
 
+## Facebook
+
+Facebook works, with one limit you should know about before you start, because
+it is not something I can code around.
+
+There is no endpoint that lists your saved items, so the links have to come from
+somewhere. Two ways. Run `skills/saved-recipes/scripts/export-facebook.js` in
+your browser console on facebook.com/saved, which scrolls the page and saves the
+links to a text file. Or ask Facebook for your data (Settings, Your information,
+Download your information, pick JSON, include "Saved items and collections") and
+point the script at the export when it turns up. Then:
+
+```bash
+python3 -I skills/saved-recipes/scripts/export-facebook.py --urls facebook-saved-urls.txt
+# or
+python3 -I skills/saved-recipes/scripts/export-facebook.py --dyi ~/Downloads/facebook-yourname
+```
+
+That reads each post's caption, author, length and date, about a second per
+post. `--append` merges with an Instagram or TikTok export.
+
+Now the limit. Facebook comment text can't be read. yt-dlp doesn't return it and
+it isn't in the page source either. On Instagram that costs you the occasional
+recipe. On Facebook it costs you a whole category of post, because the big
+recipe pages do this deliberately: the caption says "Full recipe in the first
+comment", the reel is seven seconds of the finished dish, there's no narration
+and nothing on screen. I pulled ten reels off one of those pages to check, and
+every single one was like that. Music, a beauty shot, and the recipe sitting in
+a comment nobody can read programmatically.
+
+So the exporter counts them. It looks at every caption, including the ones
+written "Recipe in Firsτ Coʍmеոτ" with lookalike letters to dodge Facebook's
+spam filter, and tells you how many of your saves are that shape before you
+spend an hour downloading video that can't help you. Facebook creators who write
+the recipe into the caption, or who talk through it, come out exactly like
+Instagram.
+
+One more honest note. I could test the exporter itself on real Facebook posts,
+and I did. I could not test the console script against a full saved page,
+because the account I had to hand has nothing saved in it. The link patterns it
+matches are the tested ones and I ran its scroll-and-collect loop against a real
+Facebook listing page, but a populated Saved page is not something I have seen
+it handle. If it comes back with nothing, that is the first thing I would
+suspect, and the Download Your Information route doesn't depend on it.
+
 ## How your login is handled
 
 Your password never goes anywhere near this, and neither do your cookies.
@@ -153,6 +200,13 @@ downloading the videos both use `yt-dlp --cookies-from-browser`, which reads
 your session straight out of the running browser and keeps it in memory. No
 cookie file gets written, so there is nothing sitting on disk to leak. Public
 collections need no sign-in at all.
+
+Facebook is the same two pieces. The console script runs on your own saved
+page and only writes out links. Downloads use `--cookies-from-browser` like
+everything else. If you go the Download Your Information route instead, nothing
+of yours leaves your machine at all, and only the links in that export get used:
+captions and names come from the live post, so Meta's mangled text encoding in
+the export file never reaches your recipes.
 
 It only reads your own saves. There is nothing in here that touches anyone
 else's account, and nothing that posts, likes, follows or sends.
@@ -173,8 +227,8 @@ Deleted posts. Six of mine had been taken down or made private since I saved
 them. Those get a file saying that, rather than an invented recipe.
 
 Comments. On Instagram a recipe in the first comment gets picked up, though one
-buried in a reply to a comment does not. On TikTok no comment text is available
-at all.
+buried in a reply to a comment does not. On TikTok and Facebook no comment text
+is available at all, and on Facebook that is where a lot of the recipes live.
 
 Categories. The default six are food ones: sweets, light and high protein, mains,
 dips and sides, baking, drinks. Edit `scripts/categories.json` to re-cut it, or
@@ -187,9 +241,9 @@ searchable copy of things you already saved, with a link back to every creator
 so you can go and watch, follow or credit them. Don't republish someone's recipe
 as your own, and don't point this at saves that aren't yours.
 
-Instagram's private endpoints change without warning, and TikTok's are read
-through yt-dlp, which has to keep up with them. If an export stops working,
-that's why. Updating yt-dlp is the first thing to try.
+Instagram's private endpoints change without warning, and TikTok and Facebook
+are read through yt-dlp, which has to keep up with them. If an export stops
+working, that's why. Updating yt-dlp is the first thing to try.
 
 ## Licence
 

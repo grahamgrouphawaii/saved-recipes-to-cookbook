@@ -135,3 +135,50 @@ second platform exists that is wrong everywhere at once, and it is the kind of
 wrong that produces a plausible dead link rather than an error. Exporters now
 write a `url` field per post and everything downstream reads it, falling back to
 the Instagram template only for collections exported before the field existed.
+
+## Facebook's limit is the comments, and no amount of code fixes it
+
+Instagram was solved by reading comments. TikTok loses comment text but keeps
+usable captions and narration. Facebook loses the comments and, on the pages
+that matter most, has nothing in the caption or the video either.
+
+What was actually checked, rather than assumed. yt-dlp returns no `comments`
+and no `comment_count` for a Facebook post, with or without `--write-comments`.
+The post's own HTML, fetched from inside a logged-in session, carries no comment
+text at all: 890KB of page shell with zero hits for "ingredient", "feedback" or
+anything comment shaped, because Facebook loads them later over GraphQL.
+mbasic.facebook.com, the old plain-HTML version that would have made this
+trivial, cannot be reached.
+
+Then the part that makes it bite. Ten reels were pulled off one large Facebook
+recipe page. Every one ran six to nine seconds, every one transcribed to
+"[MUSIC PLAYING]" or "[BLANK_AUDIO]", and every frame was a beauty shot of the
+finished dish with no text on it. The captions were all some version of "Full
+recipe in the first comment". That is not an accident, it is the page's whole
+engagement model, and it means those posts cannot be turned into recipes by
+anyone, not just by this.
+
+So the exporter counts them and says so before anything is downloaded. It folds
+lookalike letters first, because the same pages write "Recipe in Firsτ Coʍmеոτ"
+to get past Facebook's spam filters, and an unfolded match misses it.
+
+## Two of the three platforms needed a letter-folding pass
+
+"Recipe in Firsτ Coʍmеոτ" uses Greek tau, an IPA turned m, a Cyrillic e and an
+Armenian vo. Left alone it defeats every pattern in `autobuild.py`, and a line
+like that can end up as a recipe title.
+
+`fold_lookalikes()` in `recipe_text.py` puts the letters back, with one rule
+that keeps it safe: only words that already contain an ASCII letter get folded.
+A caption genuinely written in Greek, Russian or Armenian has no ASCII in its
+words and is never touched. Turkish dotless i is deliberately left out of the
+table, because Kazandıbı is spelled that way on purpose. Checked against all 521
+files of a finished Instagram book: folding changes none of them.
+
+## The venv has to beat PATH, not the other way round
+
+`setup.md` tells macOS users to build a venv because Homebrew's yt-dlp often
+fails with "No module named expat". Every script then looked at PATH first,
+found the broken Homebrew binary, and used it anyway, so the advice could be
+followed to the letter and nothing would change. `work/venv/bin/yt-dlp` now
+wins wherever it exists, in both exporters and in `watch.sh`.

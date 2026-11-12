@@ -32,8 +32,11 @@ done
 
 command -v ffmpeg >/dev/null || { echo "ffmpeg not found. See reference/setup.md" >&2; exit 1; }
 
-YTDLP=$(command -v yt-dlp || true)
-[ -z "$YTDLP" ] && [ -x "$WORK/venv/bin/yt-dlp" ] && YTDLP="$WORK/venv/bin/yt-dlp"
+# The venv wins over PATH on purpose: Homebrew's yt-dlp is often broken on
+# macOS and reference/setup.md tells people to make a venv to get round it.
+YTDLP=""
+[ -x "$WORK/venv/bin/yt-dlp" ] && YTDLP="$WORK/venv/bin/yt-dlp"
+[ -z "$YTDLP" ] && YTDLP=$(command -v yt-dlp || true)
 [ -z "$YTDLP" ] && { echo "yt-dlp not found. See reference/setup.md" >&2; exit 1; }
 
 # whisper.cpp is preferred: it is fast on an Apple silicon CPU and needs no API key
