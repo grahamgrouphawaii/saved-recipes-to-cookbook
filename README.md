@@ -75,7 +75,7 @@ whisper.cpp, both free. `skills/instagram-recipes/reference/setup.md` has the
 commands for macOS and Linux.
 
 ```bash
-git clone https://github.com/<you>/instagram-recipe-extractor
+git clone https://github.com/grahamgrouphawaii/instagram-recipe-extractor
 cd instagram-recipe-extractor
 ./install.sh
 ```
