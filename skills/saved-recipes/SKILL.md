@@ -1,6 +1,6 @@
 ---
-name: instagram-recipes
-description: Turn a saved Instagram collection into a real recipe book. Pulls every post in one of the user's own saved collections, takes the recipe from the caption, from the creator's own comment, or by watching the video and transcribing it, then writes one markdown file per recipe, sorted into categories, each one linking back to the reel. Use when someone wants to get recipes out of their Instagram saves, build a cookbook from saved reels, or asks what is in their saved recipes folder. Also covers saved collections that are not food, since only the category list is food specific.
+name: saved-recipes
+description: Turn a saved Instagram or TikTok collection into a real recipe book. Pulls every post in one of the user's own saved collections, takes the recipe from the caption, from the creator's own comment, or by watching the video and transcribing it, then writes one markdown file per recipe, sorted into categories, each one linking back to the post. Use when someone wants to get recipes out of their Instagram saves or TikTok collections, build a cookbook from saved reels, or asks what is in their saved recipes folder. Also covers saved collections that are not food, since only the category list is food specific.
 ---
 
 # Instagram saved collection to recipe book

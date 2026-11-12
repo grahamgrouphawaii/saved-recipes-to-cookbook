@@ -4,14 +4,14 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 dest="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 mkdir -p "$dest"
-if [ -e "$dest/instagram-recipes" ]; then
-  read -r -p "$dest/instagram-recipes already exists. Replace it? [y/N] " a
-  case "$a" in [yY]*) rm -rf "$dest/instagram-recipes";; *) echo "left alone"; exit 0;; esac
+if [ -e "$dest/saved-recipes" ]; then
+  read -r -p "$dest/saved-recipes already exists. Replace it? [y/N] " a
+  case "$a" in [yY]*) rm -rf "$dest/saved-recipes";; *) echo "left alone"; exit 0;; esac
 fi
-cp -R "$here/skills/instagram-recipes" "$dest/"
-cp "$here/run.sh" "$dest/instagram-recipes/run.sh"
-chmod +x "$dest/instagram-recipes/scripts/watch.sh" "$dest/instagram-recipes/run.sh"
-echo "installed to $dest/instagram-recipes"
+cp -R "$here/skills/saved-recipes" "$dest/"
+cp "$here/run.sh" "$dest/saved-recipes/run.sh"
+chmod +x "$dest/saved-recipes/scripts/watch.sh" "$dest/saved-recipes/run.sh"
+echo "installed to $dest/saved-recipes"
 echo
-echo "Now open Claude Code and ask it to build a recipe book from your saved Instagram recipes."
-echo "Missing ffmpeg, yt-dlp or whisper? See skills/instagram-recipes/reference/setup.md"
+echo "Now open Claude Code and ask it to build a recipe book from your saved recipes."
+echo "Missing ffmpeg, yt-dlp or whisper? See skills/saved-recipes/reference/setup.md"

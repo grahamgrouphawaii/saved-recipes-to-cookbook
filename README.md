@@ -71,12 +71,12 @@ so take the number as what happened to me and not as a promise.
 ## Installing it
 
 You need Python 3 and ffmpeg. For the videos you also need yt-dlp and
-whisper.cpp, both free. `skills/instagram-recipes/reference/setup.md` has the
+whisper.cpp, both free. `skills/saved-recipes/reference/setup.md` has the
 commands for macOS and Linux.
 
 ```bash
-git clone https://github.com/grahamgrouphawaii/instagram-recipe-extractor
-cd instagram-recipe-extractor
+git clone https://github.com/grahamgrouphawaii/saved-recipes-to-cookbook
+cd saved-recipes-to-cookbook
 ./install.sh
 ```
 
@@ -84,7 +84,7 @@ That copies the skill into `~/.claude/skills/`. Then open Claude Code and say:
 
 > build a recipe book from my saved Instagram recipes
 
-On claude.ai you can zip the `skills/instagram-recipes` folder and upload it as
+On claude.ai you can zip the `skills/saved-recipes` folder and upload it as
 a skill instead.
 
 ## Using it without Claude, or with a different agent
@@ -116,7 +116,7 @@ pointing anything at three hundred.
 TikTok is one command, with no console script at all:
 
 ```bash
-python3 -I skills/instagram-recipes/scripts/export-tiktok.py \
+python3 -I skills/saved-recipes/scripts/export-tiktok.py \
   "https://www.tiktok.com/@you/collection/Recipes-7312345678901234567"
 ```
 

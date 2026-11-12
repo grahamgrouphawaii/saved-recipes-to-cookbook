@@ -14,7 +14,7 @@
 set -euo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-S="$here/skills/instagram-recipes/scripts"
+S="$here/skills/saved-recipes/scripts"
 [ -d "$S" ] || S="$here/scripts"          # also works from inside an installed skill
 
 IN=""; OUT=book; TITLE="Recipe Book"; DATA=data; THRESH=6

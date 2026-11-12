@@ -3,7 +3,7 @@
 Two different things, so check which one you are being asked for.
 
 If someone wants their saved recipes turned into a book, you are running the
-job. Read `skills/instagram-recipes/SKILL.md` and follow it. It is written in
+job. Read `skills/saved-recipes/SKILL.md` and follow it. It is written in
 Claude Code's skill format, so ignore the `---` block at the top and read the
 rest; nothing in it is Claude specific.
 
@@ -19,11 +19,11 @@ captions yourself and write recipes out by hand. Run the scripts.
 # 1a. TikTok: one command. the user gets the URL from their profile, saved tab,
 #     Collections, then the one they want. --append merges with an Instagram
 #     export so both end up in one book.
-python3 -I skills/instagram-recipes/scripts/export-tiktok.py \
+python3 -I skills/saved-recipes/scripts/export-tiktok.py \
   "https://www.tiktok.com/@them/collection/Recipes-7312345678901234567"
 
 # 1b. Instagram: the user exports it themselves, in their own browser.
-#     give them skills/instagram-recipes/scripts/export-collection.js and
+#     give them skills/saved-recipes/scripts/export-collection.js and
 #     the instructions at the top of it.
 #     they end up with recipes.json.
 
@@ -31,15 +31,15 @@ python3 -I skills/instagram-recipes/scripts/export-tiktok.py \
 ./run.sh recipes.json --out book --title "Recipe Book"
 
 # 4. download and transcribe the rest, locally. no model. batches of ~50.
-skills/instagram-recipes/scripts/watch.sh --data data --work work --start 0 --count 50
+skills/saved-recipes/scripts/watch.sh --data data --work work --start 0 --count 50
 
 # 5. read work/txt/*.txt, write a JSON array of recipe records, render it
-python3 -I skills/instagram-recipes/scripts/write_recipes.py batch1.json recipes.json --out book
-python3 -I skills/instagram-recipes/scripts/audit.py recipes.json --out book --fix
+python3 -I skills/saved-recipes/scripts/write_recipes.py batch1.json recipes.json --out book
+python3 -I skills/saved-recipes/scripts/audit.py recipes.json --out book --fix
 ```
 
 Step 5 is the only part that needs you. The record shape and the valid category
-keys are documented at the top of `skills/instagram-recipes/scripts/write_recipes.py`.
+keys are documented at the top of `skills/saved-recipes/scripts/write_recipes.py`.
 
 Two practical notes. The download step needs network access, so if your sandbox
 blocks it, that step has to run with network enabled. And `run.sh` and
@@ -96,7 +96,7 @@ count matches the collection count, the book can be trusted.
 
 ## Working on the repo
 
-`skills/instagram-recipes/reference/lessons.md` is the record of what went wrong the first time through.
+`skills/saved-recipes/reference/lessons.md` is the record of what went wrong the first time through.
 Read it before changing the splitter, the titler or the categoriser, because
 most of the obvious simplifications in those three are things that were already
 tried and broke.
@@ -108,7 +108,7 @@ sends text to a model, first check whether a rule would do it.
 Adding a platform means writing one new exporter. Everything downstream reads
 `recipes.json` and `work/txt/<id>.txt` and does not care where either came
 from. The shape of a `recipes.json` record is in
-`skills/instagram-recipes/scripts/export-collection.js`.
+`skills/saved-recipes/scripts/export-collection.js`.
 
 There are no tests yet. Verify a change by running the pipeline over a real
 export and reading twenty output files, including some from
