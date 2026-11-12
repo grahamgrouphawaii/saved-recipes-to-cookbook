@@ -1,0 +1,37 @@
+{
+  "_comment": "Edit this to re-cut the book. 'order' sets both the section order in the index and the precedence when sorting. 'title_match' is tried against the recipe title and the first line of the caption, which is where the dish name lives. 'any_match' is tried against the whole caption and is only for signals that are properties rather than dish names, like macros. Title matches always beat anywhere matches. Anything unmatched lands in 'fallback'.",
+  "order": ["drink", "sweets", "bread", "light", "side", "comfort"],
+  "fallback": "comfort",
+  "names": {
+    "sweets": "Sweets & desserts",
+    "light": "Light & high protein",
+    "comfort": "Looks too good",
+    "side": "Dips, sides & snacks",
+    "bread": "Baking & bread",
+    "drink": "Drinks"
+  },
+  "blurbs": {
+    "sweets": "Desserts, frozen things, cheesecakes and the protein ones that still count as pudding.",
+    "light": "The diet and weight-loss pile. High protein, lower calorie, macros usually included.",
+    "comfort": "Mains and the indulgent stuff you saved because it looked unreasonable.",
+    "side": "Dips, sauces, dressings, sides and party food.",
+    "bread": "Bread, dough, tortillas and the low-carb bread experiments.",
+    "drink": "Drinks."
+  },
+  "title_match": {
+    "drink": "\\b(smoothie|milkshake|protein shake|latte|cappuccino|iced coffee|cold brew|cocktail|mocktail|lemonade|margarita|martini|mojito|matcha|frappe|hot chocolate|eggnog|punch|soda)\\b",
+    "sweets": "\\b(dessert|cake|cookies?|brownies?|blondies?|mousse|pudding|ice cream|gelato|chocolate|candy|caramel|cheesecake|pie|tart|donuts?|doughnuts?|cinnamon rolls?|frosting|custard|fudge|truffles?|banana bread|muffins?|crumble|cobbler|tiramisu|churros?|waffles?|pancakes?|sundae|popsicles?|toffee|marshmallow|macarons?|baklava|flan|cupcakes?|s.?mores)\\b",
+    "bread": "\\b(sourdough|bread|dough|focaccia|bagels?|biscuits?|rolls?|baguette|brioche|tortillas?|naan|pita|croissants?|loaf|pretzels?|scones?|crackers?)\\b",
+    "light": "\\b(high.?protein|protein|macro.?friendly|low.?carb|keto|carnivore|weight.?loss|fat.?loss|low.?cal|lower.?calorie|lean|skinny|guilt.?free|low.?fat|light)\\b",
+    "side": "\\b(dips?|sauce|salsa|guac|guacamole|hummus|snacks?|appetizers?|side dish|salad|slaw|pickles?|spread|dressing|wings|fries|nuggets|poppers|bites|chips|queso|relish|marinade|butter|jam)\\b",
+    "comfort": null
+  },
+  "any_match": {
+    "drink": null,
+    "sweets": "\\b(cheesecake|brownies|tiramisu|ice cream|cookie dough)\\b",
+    "bread": "\\b(sourdough starter|bread flour|focaccia)\\b",
+    "light": "\\b(macros per|calories per|\\d+\\s*g protein|protein per serving|\\d+\\s*cal\\b|high in protein)\\b",
+    "side": null,
+    "comfort": null
+  }
+}

@@ -1,0 +1,13 @@
+# your own exported collection and anything built from it
+recipes.json
+data/
+work/
+book/
+venv/
+*.mp4
+*.wav
+*.bin
+
+__pycache__/
+*.pyc
+.DS_Store
