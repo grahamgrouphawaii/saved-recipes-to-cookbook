@@ -9,7 +9,8 @@ if [ -e "$dest/instagram-recipes" ]; then
   case "$a" in [yY]*) rm -rf "$dest/instagram-recipes";; *) echo "left alone"; exit 0;; esac
 fi
 cp -R "$here/skills/instagram-recipes" "$dest/"
-chmod +x "$dest/instagram-recipes/scripts/watch.sh"
+cp "$here/run.sh" "$dest/instagram-recipes/run.sh"
+chmod +x "$dest/instagram-recipes/scripts/watch.sh" "$dest/instagram-recipes/run.sh"
 echo "installed to $dest/instagram-recipes"
 echo
 echo "Now open Claude Code and ask it to build a recipe book from your saved Instagram recipes."

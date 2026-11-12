@@ -87,6 +87,30 @@ That copies the skill into `~/.claude/skills/`. Then open Claude Code and say:
 On claude.ai you can zip the `skills/instagram-recipes` folder and upload it as
 a skill instead.
 
+## Using it without Claude, or with a different agent
+
+Half the job needs no AI, and you can run that half yourself:
+
+```bash
+./run.sh recipes.json --out book --title "My Recipe Book"
+```
+
+That triages the export, builds every recipe whose creator wrote it down,
+indexes the lot and checks every link. It then tells you how many reels are
+left to watch. On my collection that one command finished 239 of 520 recipes.
+
+For the watched half, any agent will do. There's an `AGENTS.md` in the root, so
+Codex and anything else that reads that convention picks up the same
+instructions. The scripts are plain Python 3 and bash with no Claude dependency
+anywhere, so they run on Linux or a VPS just as well as on a Mac.
+
+One caveat if you're using something other than Claude Code. Most reels get
+solved from the transcript alone, but the silent ones put the recipe on screen
+as text, and reading those needs a model that can look at images. `AGENTS.md`
+says what to do when it can't: those get a titled entry, a watch link and a note
+saying the recipe hasn't been read, instead of a guess. Test on five before
+pointing anything at three hundred.
+
 ## How your Instagram login is handled
 
 Your password never goes anywhere near this, and neither do your cookies.

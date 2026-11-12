@@ -122,6 +122,16 @@ boilerplate, which is most of the per file cost.
 
 Rebuild the index when the last batch lands.
 
+## If you cannot look at the frames
+
+Most reels come out of the transcript alone. Some creators narrate nothing and
+put the whole recipe on screen as text, and those need the frames read. If
+whatever is running this has no vision, pass `--no-frames` to `watch.sh` and
+handle the silent ones honestly: write the file with `"src": "none"` and a note
+saying the recipe is on screen in the video and has not been read, so the user
+gets a titled entry and a watch link rather than a gap. Then tell them how many
+ended that way. A partial result that says so is fine. An invented recipe is not.
+
 ## Hard rules
 
 Never write a reel code you did not read out of `recipes.json`. A fabricated
